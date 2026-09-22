@@ -23,7 +23,7 @@ This is a manual tool only - it never sells anything on its own.
     <iconFilename>icon_productionDirectSell.dds</iconFilename>
     <multiplayer supported="true"/>
 
-    <l10n filenamePrefix="l10n/l10n"/>
+    <l10n filenamePrefix="l10n/l10n_"/>
 
     <extraSourceFiles>
         <sourceFile filename="scripts/PDS_Main.lua"/>

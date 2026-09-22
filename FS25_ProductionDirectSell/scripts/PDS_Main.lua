@@ -5,21 +5,26 @@
 -- game's life cycle and into the vanilla Production menu:
 --
 --   loadMap            load GUI profiles + dialogs
---   InGameMenuProductionFrame.onFrameOpen/onFrameClose (appended)
---                       register/unregister the PDS_OPEN_SELLING key for as
---                       long as the Production menu is actually open
+--   InGameMenuProductionFrame.onFrameOpen/onFrameClose/onListSelectionChanged
+--                       (all appended) - create/show/hide a real "Sell"
+--                       button inside the frame, and register/unregister the
+--                       PDS_OPEN_SELLING key for as long as the menu is open
 --   openSellingForSelected  grab the selected production point and open
 --                       the selling dialog
 --   requestSale / onSellResult  send the sale to the server, show the result
 --
--- Note on the keybind: this does NOT use the vanilla menuButtonInfo /
--- bottom-bar-button system. That system only wires up as many buttons as
--- there are physical button slots in the frame's own layout (a small fixed
--- number) - the Production frame can already use all of them itself
--- (Back/Next/Prev plus Activate/Toggle-mode or Tag/Visit depending on what's
--- focused), so a button appended on top of those is silently dropped and its
--- key never gets registered. Registering our own action event directly on
--- frame open/close sidesteps that limit entirely and is guaranteed to work.
+-- Note on how the button is added: this does NOT use the vanilla
+-- menuButtonInfo / bottom-bar-button system that a page's own buttons go
+-- through. That system only wires up as many buttons as there are physical
+-- button slots in the frame's own layout (a small fixed number), and the
+-- Production frame can already use all of them itself (Back/Next/Prev plus
+-- Activate/Toggle-mode or Tag/Visit depending on what's focused) - a button
+-- appended on top of those is silently dropped. Instead, PDS_Main.sellButton
+-- is built by cloning one of the menu's own existing buttons
+-- (g_inGameMenu.menuButton[1]) into the same parent, the same technique the
+-- FS25_BetterContracts mod uses to add its own buttons to a vanilla in-game
+-- menu screen. A real GuiElement the player can click is not subject to
+-- that slot limit at all.
 --
 
 PDS_Main = {}
@@ -58,6 +63,7 @@ function PDS_Main:deleteMap()
     PDS_Main.confirmDialog = nil
     PDS_Main.sellingDialog = nil
     PDS_Main.sellKeyEventId = nil
+    PDS_Main.sellButton = nil
 end
 
 -------------------------------------------------------------------------------
@@ -84,28 +90,91 @@ function PDS_Main.getSelectedOwnedProductionPoint()
 end
 
 ---Registers the PDS_OPEN_SELLING key for as long as the Production frame is
--- open. Safe to call more than once (guarded by sellKeyEventId).
+-- open. Safe to call more than once (guarded by sellKeyEventId). This is a
+-- best-effort convenience on top of the button below - a plain click always
+-- works regardless of whether a custom action manages to fire on this
+-- particular setup, so the button is the primary, guaranteed way in.
 function PDS_Main.onProductionFrameOpen(pageProduction)
-    if pageProduction ~= g_currentMission.inGameMenu.pageProduction or PDS_Main.sellKeyEventId ~= nil then
+    if pageProduction ~= g_currentMission.inGameMenu.pageProduction then
         return
     end
-    local _, eventId = g_inputBinding:registerActionEvent(InputAction.PDS_OPEN_SELLING, PDS_Main, PDS_Main.onSellKeyPressed, false, true, false, true)
-    if eventId ~= nil then
-        g_inputBinding:setActionEventTextVisibility(eventId, false)
-        PDS_Main.sellKeyEventId = eventId
+    if PDS_Main.sellKeyEventId == nil then
+        local _, eventId = g_inputBinding:registerActionEvent(InputAction.PDS_OPEN_SELLING, PDS_Main, PDS_Main.onSellKeyPressed, false, true, false, true)
+        if eventId ~= nil then
+            g_inputBinding:setActionEventTextVisibility(eventId, false)
+            PDS_Main.sellKeyEventId = eventId
+        end
     end
+    PDS_Main.createSellButton()
+    PDS_Main.updateSellButtonVisibility()
 end
 
 function PDS_Main.onProductionFrameClose(pageProduction)
-    if pageProduction ~= g_currentMission.inGameMenu.pageProduction or PDS_Main.sellKeyEventId == nil then
+    if pageProduction ~= g_currentMission.inGameMenu.pageProduction then
         return
     end
-    g_inputBinding:removeActionEvent(PDS_Main.sellKeyEventId)
-    PDS_Main.sellKeyEventId = nil
+    if PDS_Main.sellKeyEventId ~= nil then
+        g_inputBinding:removeActionEvent(PDS_Main.sellKeyEventId)
+        PDS_Main.sellKeyEventId = nil
+    end
+    if PDS_Main.sellButton ~= nil then
+        PDS_Main.sellButton:setVisible(false)
+    end
+end
+
+function PDS_Main.onProductionListSelectionChanged(pageProduction, list, section, index)
+    if pageProduction ~= g_currentMission.inGameMenu.pageProduction then
+        return
+    end
+    PDS_Main.updateSellButtonVisibility()
 end
 
 function PDS_Main:onSellKeyPressed(actionName, inputValue, callbackState, isAnalog)
     PDS_Main.openSellingForSelected()
+end
+
+---A real, clickable button inside the vanilla Production menu, built by
+-- cloning one of the menu's own bottom-bar buttons (the same technique the
+-- FS25_BetterContracts mod uses to add buttons to a vanilla in-game menu
+-- screen). This sidesteps the frame's fixed-size button-slot array entirely
+-- - a genuine GuiElement the player can click always works, regardless of
+-- how the surrounding menu happens to be wiring its own buttons that frame.
+function PDS_Main.createSellButton()
+    if PDS_Main.sellButton ~= nil then
+        return
+    end
+    if g_inGameMenu == nil or g_inGameMenu.menuButton == nil or g_inGameMenu.menuButton[1] == nil then
+        return
+    end
+    local template = g_inGameMenu.menuButton[1]
+    local button = template:clone(template.parent)
+    button:setText(g_i18n:getText("pds_action_openSelling"))
+    button:setInputAction("PDS_OPEN_SELLING")
+    button.onClickCallback = PDS_Main.onSellButtonClicked
+    button:setDisabled(false)
+    button:setVisible(false)
+    if template.parent ~= nil and template.parent.invalidateLayout ~= nil then
+        template.parent:invalidateLayout(true)
+    end
+    PDS_Main.sellButton = button
+end
+
+function PDS_Main.onSellButtonClicked()
+    PDS_Main.openSellingForSelected()
+end
+
+---Shows the button only while a production the player owns, with something
+-- actually in storage, is selected - exactly the gate the spec asks for.
+function PDS_Main.updateSellButtonVisibility()
+    if PDS_Main.sellButton == nil then
+        return
+    end
+    local productionPoint = PDS_Main.getSelectedOwnedProductionPoint()
+    local visible = productionPoint ~= nil and #PDS_Manager.getSellableProducts(productionPoint) > 0
+    PDS_Main.sellButton:setVisible(visible)
+    if PDS_Main.sellButton.parent ~= nil and PDS_Main.sellButton.parent.invalidateLayout ~= nil then
+        PDS_Main.sellButton.parent:invalidateLayout(true)
+    end
 end
 
 function PDS_Main.installProductionMenuHook()
@@ -115,6 +184,7 @@ function PDS_Main.installProductionMenuHook()
     end
     InGameMenuProductionFrame.onFrameOpen = Utils.appendedFunction(InGameMenuProductionFrame.onFrameOpen, PDS_Main.onProductionFrameOpen)
     InGameMenuProductionFrame.onFrameClose = Utils.appendedFunction(InGameMenuProductionFrame.onFrameClose, PDS_Main.onProductionFrameClose)
+    InGameMenuProductionFrame.onListSelectionChanged = Utils.appendedFunction(InGameMenuProductionFrame.onListSelectionChanged, PDS_Main.onProductionListSelectionChanged)
 end
 
 ---Opens the selling dialog for whatever production is currently selected in
