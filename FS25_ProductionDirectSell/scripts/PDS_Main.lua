@@ -4,13 +4,22 @@
 -- Entry point (the only file listed in modDesc.xml). Wires the mod into the
 -- game's life cycle and into the vanilla Production menu:
 --
---   loadMap            load GUI profiles + dialogs, register the keybind
---   InGameMenuProductionFrame.updateMenuButtons (appended)
---                       add a "Sell" button/key hint when an owned,
---                       in-stock production is selected
+--   loadMap            load GUI profiles + dialogs
+--   InGameMenuProductionFrame.onFrameOpen/onFrameClose (appended)
+--                       register/unregister the PDS_OPEN_SELLING key for as
+--                       long as the Production menu is actually open
 --   openSellingForSelected  grab the selected production point and open
 --                       the selling dialog
 --   requestSale / onSellResult  send the sale to the server, show the result
+--
+-- Note on the keybind: this does NOT use the vanilla menuButtonInfo /
+-- bottom-bar-button system. That system only wires up as many buttons as
+-- there are physical button slots in the frame's own layout (a small fixed
+-- number) - the Production frame can already use all of them itself
+-- (Back/Next/Prev plus Activate/Toggle-mode or Tag/Visit depending on what's
+-- focused), so a button appended on top of those is silently dropped and its
+-- key never gets registered. Registering our own action event directly on
+-- frame open/close sidesteps that limit entirely and is guaranteed to work.
 --
 
 PDS_Main = {}
@@ -48,6 +57,7 @@ end
 function PDS_Main:deleteMap()
     PDS_Main.confirmDialog = nil
     PDS_Main.sellingDialog = nil
+    PDS_Main.sellKeyEventId = nil
 end
 
 -------------------------------------------------------------------------------
@@ -73,26 +83,29 @@ function PDS_Main.getSelectedOwnedProductionPoint()
     return productionPoint
 end
 
-function PDS_Main.updateMenuButtons(pageProduction)
-    if pageProduction ~= g_currentMission.inGameMenu.pageProduction then
+---Registers the PDS_OPEN_SELLING key for as long as the Production frame is
+-- open. Safe to call more than once (guarded by sellKeyEventId).
+function PDS_Main.onProductionFrameOpen(pageProduction)
+    if pageProduction ~= g_currentMission.inGameMenu.pageProduction or PDS_Main.sellKeyEventId ~= nil then
         return
     end
-    local productionPoint = PDS_Main.getSelectedOwnedProductionPoint()
-    if productionPoint == nil then
+    local _, eventId = g_inputBinding:registerActionEvent(InputAction.PDS_OPEN_SELLING, PDS_Main, PDS_Main.onSellKeyPressed, false, true, false, true)
+    if eventId ~= nil then
+        g_inputBinding:setActionEventTextVisibility(eventId, false)
+        PDS_Main.sellKeyEventId = eventId
+    end
+end
+
+function PDS_Main.onProductionFrameClose(pageProduction)
+    if pageProduction ~= g_currentMission.inGameMenu.pageProduction or PDS_Main.sellKeyEventId == nil then
         return
     end
-    if #PDS_Manager.getSellableProducts(productionPoint) == 0 then
-        return
-    end
-    if PDS_Main.sellButtonInfo == nil then
-        PDS_Main.sellButtonInfo = {
-            inputAction = InputAction.PDS_OPEN_SELLING,
-            text = g_i18n:getText("pds_action_openSelling"),
-            callback = PDS_Main.openSellingForSelected,
-        }
-    end
-    table.insert(pageProduction.menuButtonInfo, PDS_Main.sellButtonInfo)
-    pageProduction:setMenuButtonInfoDirty()
+    g_inputBinding:removeActionEvent(PDS_Main.sellKeyEventId)
+    PDS_Main.sellKeyEventId = nil
+end
+
+function PDS_Main:onSellKeyPressed(actionName, inputValue, callbackState, isAnalog)
+    PDS_Main.openSellingForSelected()
 end
 
 function PDS_Main.installProductionMenuHook()
@@ -100,7 +113,8 @@ function PDS_Main.installProductionMenuHook()
         Logging.error("[ProductionDirectSell] InGameMenuProductionFrame not found, mod disabled")
         return
     end
-    InGameMenuProductionFrame.updateMenuButtons = Utils.appendedFunction(InGameMenuProductionFrame.updateMenuButtons, PDS_Main.updateMenuButtons)
+    InGameMenuProductionFrame.onFrameOpen = Utils.appendedFunction(InGameMenuProductionFrame.onFrameOpen, PDS_Main.onProductionFrameOpen)
+    InGameMenuProductionFrame.onFrameClose = Utils.appendedFunction(InGameMenuProductionFrame.onFrameClose, PDS_Main.onProductionFrameClose)
 end
 
 ---Opens the selling dialog for whatever production is currently selected in
