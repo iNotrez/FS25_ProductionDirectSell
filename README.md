@@ -5,7 +5,7 @@
 <br/>
 
 [![Farming Simulator 25](https://img.shields.io/badge/Farming%20Simulator-25-0c0d0f?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzdkY2MzMyIgZD0iTTEyIDJMMiA3djEwbDEwIDUgMTAtNVY3eiIvPjwvc3ZnPg==)](https://www.farming-simulator.com/)
-[![Version](https://img.shields.io/badge/version-1.0.0.0-7dcc33?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/version-1.0.0.1-7dcc33?style=for-the-badge)](#)
 [![Multiplayer](https://img.shields.io/badge/multiplayer-supported-3fa9f5?style=for-the-badge)](#multiplayer)
 [![License](https://img.shields.io/badge/license-MIT-9aa0a6?style=for-the-badge)](LICENSE)
 
