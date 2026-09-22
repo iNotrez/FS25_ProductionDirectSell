@@ -11,35 +11,30 @@
       .step-title { font: 700 16px "Segoe UI", Verdana, sans-serif; fill: #f5f6f7; }
       .step-sub { font: 400 12.5px "Segoe UI", Verdana, sans-serif; fill: #9aa0a6; }
       .path { fill: none; stroke: #2a2d31; stroke-width: 3; stroke-dasharray: 6 8; }
-      @keyframes travel {
-        0%   { offset-distance: 0%; opacity: 0; }
-        4%   { opacity: 1; }
-        96%  { opacity: 1; }
-        100% { offset-distance: 100%; opacity: 0; }
-      }
-      .runner {
-        offset-path: path("M 90,120 L 90,210 L 310,210 L 310,120 L 530,120 L 530,210 L 750,210 L 750,120 L 970,120 L 970,210 L 1110,210");
-        animation: travel 6s linear infinite;
-      }
-      @keyframes ringPulse {
-        0%, 100% { r: 44; opacity: 0.9; }
-        50%      { r: 50; opacity: 0.35; }
-      }
-      .ring { animation: ringPulse 2s ease-in-out infinite; }
     </style>
+    <path id="rail" d="M 90,120 L 90,210 L 310,210 L 310,120 L 530,120 L 530,210 L 750,210 L 750,120 L 970,120 L 970,210 L 1110,210"/>
   </defs>
 
   <rect class="bg" x="0" y="0" width="1200" height="420"/>
 
   <!-- connecting rail -->
-  <path class="path" d="M 90,120 L 90,210 L 310,210 L 310,120 L 530,120 L 530,210 L 750,210 L 750,120 L 970,120 L 970,210 L 1110,210"/>
+  <use href="#rail" class="path"/>
 
-  <!-- travelling pulse -->
-  <circle class="runner" r="7" fill="url(#accent2)"/>
+  <!-- travelling pulse (SMIL animateMotion - the reliable, cross-browser way to move
+       something along a path when this SVG is embedded as a plain <img>) -->
+  <circle r="7" fill="url(#accent2)">
+    <animateMotion dur="6s" repeatCount="indefinite" rotate="0">
+      <mpath href="#rail"/>
+    </animateMotion>
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.96;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
 
   <!-- Step 1 -->
   <g transform="translate(90,80)">
-    <circle class="ring" r="44" fill="none" stroke="#7dcc33" stroke-width="2"/>
+    <circle r="44" fill="none" stroke="#7dcc33" stroke-width="2">
+      <animate attributeName="r" values="44;50;44" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.9;0.35;0.9" dur="2s" repeatCount="indefinite"/>
+    </circle>
     <circle r="40" class="card"/>
     <text text-anchor="middle" y="6" class="step-num" fill="#f5f6f7">1</text>
   </g>
