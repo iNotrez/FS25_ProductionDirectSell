@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!--
+    Production Direct Sell - English texts.
+    %s / %d are filled in by the mod; keep them (in the same order) when translating.
+    To add a language, copy this file to l10n_de.xml, l10n_fr.xml, ... (see modDesc.xml l10n filenamePrefix).
+-->
+<l10n>
+    <elements>
+        <!-- input action (Options > Controls) -->
+        <e k="input_PDS_OPEN_SELLING" v="Production Direct Selling"/>
+
+        <!-- production menu button -->
+        <e k="pds_action_openSelling" v="Sell"/>
+
+        <!-- warnings shown on the vanilla HUD -->
+        <e k="pds_warning_noProductionSelected" v="Select an owned production first"/>
+        <e k="pds_warning_nothingToSell" v="This production has nothing in storage to sell"/>
+
+        <!-- selling screen -->
+        <e k="pds_title_selling" v="SELLING"/>
+        <e k="pds_header_product" v="PRODUCT"/>
+        <e k="pds_header_sellPoints" v="SELL POINTS"/>
+        <e k="pds_empty_products" v="Nothing in storage right now"/>
+        <e k="pds_empty_sellPoints" v="No sell point accepts this product"/>
+        <e k="pds_label_available" v="AVAILABLE"/>
+        <e k="pds_label_sellPoint" v="SELECTED SELL POINT"/>
+        <e k="pds_label_price" v="PRICE"/>
+        <e k="pds_label_amount" v="AMOUNT"/>
+        <e k="pds_label_gross" v="GROSS VALUE"/>
+        <e k="pds_label_fee" v="DELIVERY FEE"/>
+        <e k="pds_label_youReceive" v="YOU RECEIVE"/>
+        <e k="pds_value_noSellPoint" v="-"/>
+        <e k="pds_button_sellAll" v="Sell all"/>
+        <e k="pds_button_sellCustom" v="Sell custom amount"/>
+        <e k="pds_button_cancel" v="Cancel"/>
+        <e k="pds_message_selling" v="Selling..."/>
+        <e k="pds_error_amountTooLow" v="Enter an amount to sell"/>
+
+        <!-- formatting -->
+        <e k="pds_format_pricePer1000" v="%s / 1,000 L"/>
+        <e k="pds_format_fee" v="%.0f%% (-%s)"/>
+
+        <!-- confirm sale -->
+        <e k="pds_title_confirmSale" v="CONFIRM SALE"/>
+        <e k="pds_message_confirmSale" v="This is a remote sale: the product is removed from storage and the payout is added to your farm immediately. This cannot be undone."/>
+        <e k="pds_button_confirmSale" v="Confirm sale"/>
+
+        <!-- results / errors -->
+        <e k="pds_notification_sold" v="Sold %s at %s for %s"/>
+        <e k="pds_error_generic" v="The sale could not be completed"/>
+        <e k="pds_error_invalidProduction" v="You no longer own this production"/>
+        <e k="pds_error_invalidProduct" v="This product is no longer available here"/>
+        <e k="pds_error_invalidSellPoint" v="That sell point no longer accepts this product"/>
+        <e k="pds_error_nothingToSell" v="There is nothing left to sell"/>
+    </elements>
+</l10n>

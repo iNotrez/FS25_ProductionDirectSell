@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!--
+    Production Direct Sell - GUI profiles (shared by both dialogs).
+    Every profile extends a base-game FS25 profile or trait and is prefixed
+    "pds" so it can never clash with the game or another mod.
+
+    Colours:
+      panel        0.055 0.059 0.067      card/list row   0.105 0.110 0.122
+      label (grey) 0.60 0.63 0.66         value           0.96 0.96 0.96
+      accent green 0.49 0.80 0.20         warning         1.00 0.66 0.20
+      danger red   0.95 0.33 0.30
+-->
+<GUIProfiles>
+
+    <!-- ============================ dialog frames ============================ -->
+    <Profile name="pdsDialogSelling" extends="fs25_dialogBg">
+        <size value="1500px 980px"/>
+    </Profile>
+    <Profile name="pdsDialogConfirm" extends="fs25_dialogBg">
+        <size value="760px 760px"/>
+    </Profile>
+
+    <Profile name="pdsContentRoot" extends="emptyPanel" with="anchorStretchingYStretchingX">
+    </Profile>
+
+    <!-- ============================ panels / shapes ============================ -->
+    <Profile name="pdsPanel" extends="baseReference" with="anchorTopLeft">
+        <imageColor value="0.055 0.059 0.067 0.92"/>
+    </Profile>
+    <Profile name="pdsDivider" extends="baseReference" with="anchorTopLeft">
+        <size value="100px 2px"/>
+        <imageColor value="1 1 1 0.08"/>
+    </Profile>
+    <Profile name="pdsAccentBar" extends="baseReference" with="anchorTopLeft">
+        <size value="680px 4px"/>
+        <imageColor value="0.49 0.80 0.20 1"/>
+    </Profile>
+
+    <!-- ============================ texts ============================ -->
+    <Profile name="pdsTitle" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="900px 40px"/>
+        <textSize value="30px"/>
+        <textBold value="true"/>
+        <textColor value="0.96 0.96 0.96 1"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="pdsSubtitle" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="1000px 26px"/>
+        <textSize value="17px"/>
+        <textColor value="0.60 0.63 0.66 1"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="pdsSectionHeader" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="600px 24px"/>
+        <textSize value="15px"/>
+        <textBold value="true"/>
+        <textColor value="0.60 0.63 0.66 1"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="pdsLabel" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="300px 22px"/>
+        <textSize value="14px"/>
+        <textBold value="true"/>
+        <textColor value="0.60 0.63 0.66 1"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="pdsValue" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="320px 30px"/>
+        <textSize value="21px"/>
+        <textBold value="true"/>
+        <textColor value="0.96 0.96 0.96 1"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="pdsValueHero" extends="pdsValue">
+        <size value="500px 50px"/>
+        <textSize value="38px"/>
+        <textColor value="0.49 0.80 0.20 1"/>
+    </Profile>
+    <Profile name="pdsMessage" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="680px 60px"/>
+        <textSize value="15px"/>
+        <textBold value="true"/>
+        <textColor value="1.00 0.66 0.20 1"/>
+        <textAlignment value="left"/>
+        <textWrapWidth value="680px"/>
+    </Profile>
+    <Profile name="pdsEmpty" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="600px 60px"/>
+        <textSize value="16px"/>
+        <textColor value="0.60 0.63 0.66 1"/>
+        <textAlignment value="center"/>
+        <textWrapWidth value="600px"/>
+    </Profile>
+
+    <!-- ============================ list rows ============================ -->
+    <Profile name="pdsListContainer" extends="emptyPanel" with="anchorTopLeft">
+    </Profile>
+    <Profile name="pdsList" extends="fs25_subCategoryList" with="anchorStretchingYStretchingX">
+    </Profile>
+
+    <Profile name="pdsRow" extends="baseReference" with="anchorTopStretchingX">
+        <height value="48px"/>
+        <imageSliceId value="gui.gamepadBindingsBox_middle"/>
+        <imageColor value="0.105 0.110 0.122 1"/>
+        <imageSelectedColor value="0.17 0.26 0.10 1"/>
+        <startImageSize value="8px 0"/>
+        <startImageSliceId value="gui.gamepadBindingsBox_left"/>
+        <startImageColor value="0.105 0.110 0.122 1"/>
+        <startImageSelectedColor value="0.17 0.26 0.10 1"/>
+        <endImageSize value="8px 0"/>
+        <endImageSliceId value="gui.gamepadBindingsBox_right"/>
+        <endImageColor value="0.105 0.110 0.122 1"/>
+        <endImageSelectedColor value="0.17 0.26 0.10 1"/>
+    </Profile>
+
+    <Profile name="pdsRowNameText" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="400px 26px"/>
+        <textSize value="17px"/>
+        <textColor value="0.96 0.96 0.96 1"/>
+        <textAlignment value="left"/>
+    </Profile>
+    <Profile name="pdsRowValueText" extends="fs25_textDefault" with="anchorTopLeft">
+        <size value="260px 26px"/>
+        <textSize value="17px"/>
+        <textBold value="true"/>
+        <textColor value="0.96 0.96 0.96 1"/>
+        <textAlignment value="right"/>
+    </Profile>
+    <Profile name="pdsRowValueTextUp" extends="pdsRowValueText">
+        <textColor value="0.49 0.80 0.20 1"/>
+    </Profile>
+    <Profile name="pdsRowValueTextDown" extends="pdsRowValueText">
+        <textColor value="0.95 0.33 0.30 1"/>
+    </Profile>
+
+    <!-- ============================ inputs ============================ -->
+    <Profile name="pdsInputAmount" extends="fs25_textInput" with="anchorTopLeft">
+        <size value="320px 42px"/>
+        <maxCharacters value="10"/>
+        <textSize value="20px"/>
+        <textColor value="1 1 1 1"/>
+        <focusedTextColor value="1 1 1 1"/>
+    </Profile>
+
+    <!-- ============================ confirm-dialog rows ============================ -->
+    <Profile name="pdsRowLabel" extends="pdsLabel">
+        <size value="330px 22px"/>
+    </Profile>
+    <Profile name="pdsRowValueRight" extends="pdsValue">
+        <size value="330px 26px"/>
+        <textSize value="19px"/>
+        <textAlignment value="right"/>
+    </Profile>
+</GUIProfiles>

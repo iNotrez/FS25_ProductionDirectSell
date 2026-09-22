@@ -1,0 +1,94 @@
+<svg width="1000" height="640" viewBox="0 0 1000 640" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="accent3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7dcc33"/>
+      <stop offset="100%" stop-color="#3fa9f5"/>
+    </linearGradient>
+    <style>
+      .panel { fill: #101215; stroke: #2a2d31; stroke-width: 1.5; }
+      .row { fill: #1a1d20; }
+      .rowSel { fill: #223417; stroke: #7dcc33; stroke-width: 1.5; }
+      .title { font: 700 26px "Segoe UI", Verdana, sans-serif; fill: #f5f6f7; }
+      .sub { font: 400 14px "Segoe UI", Verdana, sans-serif; fill: #9aa0a6; }
+      .h { font: 700 12px "Segoe UI", Verdana, sans-serif; fill: #9aa0a6; letter-spacing: 1px; }
+      .name { font: 400 15px "Segoe UI", Verdana, sans-serif; fill: #f5f6f7; }
+      .val { font: 700 15px "Segoe UI", Verdana, sans-serif; fill: #f5f6f7; }
+      .valUp { font: 700 15px "Segoe UI", Verdana, sans-serif; fill: #7dcc33; }
+      .label { font: 700 12px "Segoe UI", Verdana, sans-serif; fill: #9aa0a6; letter-spacing: 0.5px; }
+      .bigval { font: 700 30px "Segoe UI", Verdana, sans-serif; fill: #7dcc33; }
+      .midval { font: 700 22px "Segoe UI", Verdana, sans-serif; fill: #f5f6f7; }
+      .btn { fill: #1c1f22; stroke: #2a2d31; }
+      .btnOk { fill: url(#accent3); }
+      .btnTxt { font: 700 14px "Segoe UI", Verdana, sans-serif; fill: #0c0d0f; }
+      .btnTxt2 { font: 700 14px "Segoe UI", Verdana, sans-serif; fill: #f5f6f7; }
+      @keyframes blink { 0%, 45%, 100% { opacity: 1; } 50%, 95% { opacity: 0.25; } }
+      .caret { animation: blink 1.1s steps(1) infinite; }
+      @keyframes countGlow { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
+      .receive { animation: countGlow 2.2s ease-in-out infinite; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="640" fill="#08090a"/>
+  <rect x="20" y="20" width="960" height="600" rx="14" class="panel"/>
+
+  <text x="52" y="66" class="title">SELLING</text>
+  <text x="52" y="90" class="sub">Bakery</text>
+
+  <!-- products -->
+  <text x="52" y="122" class="h">PRODUCT</text>
+  <rect x="52" y="132" width="400" height="180" rx="8" class="panel"/>
+  <rect x="62" y="142" width="380" height="40" rx="6" class="rowSel"/>
+  <text x="78" y="167" class="name">Bread</text>
+  <text x="420" y="167" text-anchor="end" class="val">4,000 L</text>
+  <rect x="62" y="188" width="380" height="40" rx="6" class="row"/>
+  <text x="78" y="213" class="name">Cake</text>
+  <text x="420" y="213" text-anchor="end" class="val">750 L</text>
+
+  <!-- sell points -->
+  <text x="480" y="122" class="h">SELL POINTS (Bread)</text>
+  <rect x="480" y="132" width="468" height="180" rx="8" class="panel"/>
+  <rect x="490" y="142" width="448" height="40" rx="6" class="rowSel"/>
+  <text x="506" y="167" class="name">&gt; Restaurant</text>
+  <text x="926" y="167" text-anchor="end" class="valUp">$3,200 / 1,000 L</text>
+  <rect x="490" y="188" width="448" height="40" rx="6" class="row"/>
+  <text x="506" y="213" class="name">Supermarket</text>
+  <text x="926" y="213" text-anchor="end" class="val">$3,050 / 1,000 L</text>
+  <rect x="490" y="234" width="448" height="40" rx="6" class="row"/>
+  <text x="506" y="259" class="name">Bakery</text>
+  <text x="926" y="259" text-anchor="end" class="val">$2,900 / 1,000 L</text>
+
+  <!-- summary panel -->
+  <rect x="52" y="340" width="896" height="180" rx="10" class="panel"/>
+
+  <text x="80" y="372" class="label">AVAILABLE</text>
+  <text x="80" y="398" class="midval">4,000 L</text>
+
+  <text x="80" y="436" class="label">SELECTED SELL POINT</text>
+  <text x="80" y="462" class="midval">Restaurant</text>
+
+  <text x="80" y="494" class="label">PRICE</text>
+  <text x="80" y="500" class="midval" dy="0">$3,200 / 1,000 L</text>
+
+  <text x="330" y="372" class="label">AMOUNT</text>
+  <rect x="330" y="382" width="200" height="34" rx="6" fill="#0c0d0f" stroke="#3a3d41"/>
+  <text x="344" y="405" class="val">4,000<tspan class="caret">|</tspan></text>
+
+  <text x="580" y="372" class="label">GROSS VALUE</text>
+  <text x="580" y="398" class="midval">$12,800</text>
+
+  <text x="580" y="436" class="label">DELIVERY FEE</text>
+  <text x="580" y="462" class="midval" fill="#f2b84b" style="fill:#f2b84b">8% (-$1,024)</text>
+
+  <text x="580" y="494" class="label">YOU RECEIVE</text>
+  <text x="580" y="516" class="bigval receive">$11,776</text>
+
+  <!-- buttons -->
+  <rect x="672" y="558" width="90" height="42" rx="8" class="btn"/>
+  <text x="717" y="584" text-anchor="middle" class="btnTxt2">CANCEL</text>
+
+  <rect x="774" y="558" width="220" height="42" rx="8" class="btn"/>
+  <text x="884" y="584" text-anchor="middle" class="btnTxt2">SELL CUSTOM AMOUNT</text>
+
+  <rect x="52" y="558" width="150" height="42" rx="8" class="btnOk"/>
+  <text x="127" y="584" text-anchor="middle" class="btnTxt">SELL ALL</text>
+</svg>

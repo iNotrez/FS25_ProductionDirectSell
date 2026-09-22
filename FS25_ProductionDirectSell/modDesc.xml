@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="111">
+    <author>iNotrez</author>
+    <version>1.0.0.0</version>
+    <title>
+        <en>Production Direct Sell</en>
+    </title>
+    <description>
+        <en><![CDATA[
+Sell what's sitting inside your productions without loading a trailer and driving it across the map.
+
+- Open the vanilla Production menu, select a production you own, then press F6 ("Production Direct Selling").
+- Only shows products the production actually has in storage right now - nothing at 0L, nothing it merely could make.
+- Every sell point that accepts the selected product is listed, sorted highest price to lowest, using the game's real, live selling prices (market prices, seasonal swings, sell-point-specific prices - all vanilla).
+- Sell everything in one click or type a custom amount.
+- A random 2-18% remote-delivery fee applies to every sale (this is instant remote selling, so it costs a little more than driving it there yourself). The fee is rolled once per product/sell-point choice and stays put until you change something.
+- Always shows gross value, the fee, and your final payout before you confirm. Nothing is sold without your confirmation.
+- Full multiplayer support: the server validates the production, the sell point and the amount, and pays the correct farm.
+
+This is a manual tool only - it never sells anything on its own.
+        ]]></en>
+    </description>
+    <iconFilename>icon_productionDirectSell.dds</iconFilename>
+    <multiplayer supported="true"/>
+
+    <l10n filenamePrefix="l10n/l10n"/>
+
+    <extraSourceFiles>
+        <sourceFile filename="scripts/PDS_Main.lua"/>
+    </extraSourceFiles>
+
+    <actions>
+        <action name="PDS_OPEN_SELLING" category="SYSTEM" axisType="HALF" ignoreComboMask="true"/>
+    </actions>
+
+    <inputBinding>
+        <actionBinding action="PDS_OPEN_SELLING">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_f6"/>
+        </actionBinding>
+    </inputBinding>
+</modDesc>

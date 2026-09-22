@@ -1,0 +1,8 @@
+# Packaged mod (built from FS25_ProductionDirectSell/ via GitHub Releases, not tracked in git)
+FS25_ProductionDirectSell.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/

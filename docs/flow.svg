@@ -1,0 +1,88 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="accent2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7dcc33"/>
+      <stop offset="100%" stop-color="#3fa9f5"/>
+    </linearGradient>
+    <style>
+      .bg { fill: #0c0d0f; }
+      .card { fill: #16181b; stroke: #2a2d31; stroke-width: 1.5; }
+      .step-num { font: 700 15px "Segoe UI", Verdana, sans-serif; fill: #0c0d0f; }
+      .step-title { font: 700 16px "Segoe UI", Verdana, sans-serif; fill: #f5f6f7; }
+      .step-sub { font: 400 12.5px "Segoe UI", Verdana, sans-serif; fill: #9aa0a6; }
+      .path { fill: none; stroke: #2a2d31; stroke-width: 3; stroke-dasharray: 6 8; }
+      @keyframes travel {
+        0%   { offset-distance: 0%; opacity: 0; }
+        4%   { opacity: 1; }
+        96%  { opacity: 1; }
+        100% { offset-distance: 100%; opacity: 0; }
+      }
+      .runner {
+        offset-path: path("M 90,120 L 90,210 L 310,210 L 310,120 L 530,120 L 530,210 L 750,210 L 750,120 L 970,120 L 970,210 L 1110,210");
+        animation: travel 6s linear infinite;
+      }
+      @keyframes ringPulse {
+        0%, 100% { r: 44; opacity: 0.9; }
+        50%      { r: 50; opacity: 0.35; }
+      }
+      .ring { animation: ringPulse 2s ease-in-out infinite; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="420"/>
+
+  <!-- connecting rail -->
+  <path class="path" d="M 90,120 L 90,210 L 310,210 L 310,120 L 530,120 L 530,210 L 750,210 L 750,120 L 970,120 L 970,210 L 1110,210"/>
+
+  <!-- travelling pulse -->
+  <circle class="runner" r="7" fill="url(#accent2)"/>
+
+  <!-- Step 1 -->
+  <g transform="translate(90,80)">
+    <circle class="ring" r="44" fill="none" stroke="#7dcc33" stroke-width="2"/>
+    <circle r="40" class="card"/>
+    <text text-anchor="middle" y="6" class="step-num" fill="#f5f6f7">1</text>
+  </g>
+  <text x="90" y="255" text-anchor="middle" class="step-title">Open Production Menu</text>
+  <text x="90" y="276" text-anchor="middle" class="step-sub">Select an owned production</text>
+
+  <!-- Step 2 -->
+  <g transform="translate(310,80)">
+    <circle r="40" class="card"/>
+    <text text-anchor="middle" y="6" class="step-num" fill="#f5f6f7">2</text>
+  </g>
+  <text x="310" y="165" text-anchor="middle" class="step-title">Press F6</text>
+  <text x="310" y="186" text-anchor="middle" class="step-sub">Production Direct Selling</text>
+
+  <!-- Step 3 -->
+  <g transform="translate(530,80)">
+    <circle r="40" class="card"/>
+    <text text-anchor="middle" y="6" class="step-num" fill="#f5f6f7">3</text>
+  </g>
+  <text x="530" y="255" text-anchor="middle" class="step-title">Pick Product &amp; Sell Point</text>
+  <text x="530" y="276" text-anchor="middle" class="step-sub">Sorted best price first</text>
+
+  <!-- Step 4 -->
+  <g transform="translate(750,80)">
+    <circle r="40" class="card"/>
+    <text text-anchor="middle" y="6" class="step-num" fill="#f5f6f7">4</text>
+  </g>
+  <text x="750" y="165" text-anchor="middle" class="step-title">Sell All / Custom</text>
+  <text x="750" y="186" text-anchor="middle" class="step-sub">2%-18% delivery fee shown</text>
+
+  <!-- Step 5 -->
+  <g transform="translate(970,80)">
+    <circle r="40" class="card"/>
+    <text text-anchor="middle" y="6" class="step-num" fill="#f5f6f7">5</text>
+  </g>
+  <text x="970" y="255" text-anchor="middle" class="step-title">Confirm Sale</text>
+  <text x="970" y="276" text-anchor="middle" class="step-sub">Irreversible - final payout shown</text>
+
+  <!-- Step 6 -->
+  <g transform="translate(1110,210)">
+    <circle r="40" fill="#16181b" stroke="url(#accent2)" stroke-width="2.5"/>
+    <text text-anchor="middle" y="6" class="step-num" fill="#7dcc33">$</text>
+  </g>
+  <text x="1110" y="295" text-anchor="middle" class="step-title">Paid</text>
+  <text x="1110" y="316" text-anchor="middle" class="step-sub">Stock removed, farm paid</text>
+</svg>

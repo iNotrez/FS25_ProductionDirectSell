@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!--
+    Generic confirmation dialog: title, up to 8 label/value rows, an optional
+    message line. Used for CONFIRM SALE and for simple error/info popups.
+-->
+<GUI onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+    <GuiElement profile="newLayer"/>
+    <Bitmap profile="dialogFullscreenBg" id="dialogBg"/>
+
+    <GuiElement profile="pdsDialogConfirm" id="dialogElement">
+        <ThreePartBitmap profile="fs25_dialogBgMiddle"/>
+        <ThreePartBitmap profile="fs25_dialogBgTop"/>
+        <ThreePartBitmap profile="fs25_dialogBgBottom"/>
+
+        <GuiElement profile="pdsContentRoot">
+            <Bitmap profile="pdsAccentBar" position="40px -26px" id="accentBar"/>
+            <Text profile="pdsTitle" position="40px -40px" size="680px 40px" id="titleText" text=""/>
+            <Text profile="pdsSubtitle" position="40px -78px" size="680px 26px" id="subtitleText" text=""/>
+
+            <Bitmap profile="pdsPanel" position="40px -118px" size="680px 380px" id="rowsPanel"/>
+            <Text profile="pdsRowLabel" position="64px -134px" id="rowLabel1" text=""/>
+            <Text profile="pdsRowValueRight" position="366px -132px" id="rowValue1" text=""/>
+            <Text profile="pdsRowLabel" position="64px -172px" id="rowLabel2" text=""/>
+            <Text profile="pdsRowValueRight" position="366px -170px" id="rowValue2" text=""/>
+            <Text profile="pdsRowLabel" position="64px -210px" id="rowLabel3" text=""/>
+            <Text profile="pdsRowValueRight" position="366px -208px" id="rowValue3" text=""/>
+            <Text profile="pdsRowLabel" position="64px -248px" id="rowLabel4" text=""/>
+            <Text profile="pdsRowValueRight" position="366px -246px" id="rowValue4" text=""/>
+            <Text profile="pdsRowLabel" position="64px -286px" id="rowLabel5" text=""/>
+            <Text profile="pdsRowValueRight" position="366px -284px" id="rowValue5" text=""/>
+            <Text profile="pdsRowLabel" position="64px -324px" id="rowLabel6" text=""/>
+            <Text profile="pdsRowValueRight" position="366px -322px" id="rowValue6" text=""/>
+            <Text profile="pdsRowLabel" position="64px -362px" id="rowLabel7" text=""/>
+            <Text profile="pdsRowValueRight" position="366px -360px" id="rowValue7" text=""/>
+
+            <Text profile="pdsMessage" position="40px -520px" size="680px 60px" id="messageText" text=""/>
+        </GuiElement>
+
+        <BoxLayout profile="fs25_dialogButtonBox">
+            <Button profile="buttonBack" text="$l10n_button_back" onClick="onClickBack" id="backButton"/>
+            <Bitmap profile="fs25_dialogButtonBoxSeparator" id="buttonSeparator"/>
+            <Button profile="buttonOK" text="$l10n_button_ok" onClick="onClickConfirm" id="confirmButton"/>
+        </BoxLayout>
+    </GuiElement>
+</GUI>

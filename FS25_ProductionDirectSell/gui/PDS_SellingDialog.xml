@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!--
+    Production Direct Sell - the SELLING screen opened from the vanilla
+    Production menu. Left: products currently in storage. Right: sell points
+    that accept the selected product, best price first. Bottom: amount,
+    gross/fee/payout and the sell/cancel buttons.
+-->
+<GUI onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+    <GuiElement profile="newLayer"/>
+    <Bitmap profile="dialogFullscreenBg" id="dialogBg"/>
+
+    <GuiElement profile="pdsDialogSelling" id="dialogElement">
+        <ThreePartBitmap profile="fs25_dialogBgMiddle"/>
+        <ThreePartBitmap profile="fs25_dialogBgTop"/>
+        <ThreePartBitmap profile="fs25_dialogBgBottom"/>
+
+        <GuiElement profile="pdsContentRoot">
+            <Text profile="pdsTitle" position="50px -30px" text="$l10n_pds_title_selling"/>
+            <Text profile="pdsSubtitle" position="50px -70px" size="1000px 26px" id="productionNameText" text=""/>
+
+            <!-- ===== left: products ===== -->
+            <Text profile="pdsSectionHeader" position="50px -112px" text="$l10n_pds_header_product"/>
+            <GuiElement profile="pdsListContainer" position="50px -140px" size="600px 460px">
+                <Bitmap profile="fs25_subCategoryStartClipper" name="startClipper"/>
+                <Bitmap profile="fs25_subCategoryStopClipper" name="endClipper"/>
+                <SmoothList profile="pdsList" id="productList" listItemSpacing="6px"
+                            startClipperElementName="startClipper" endClipperElementName="endClipper"
+                            handleFocus="true" focusInit="onOpen" onListSelectionChanged="onProductSelectionChanged">
+                    <ListItem profile="pdsRow">
+                        <Text profile="pdsRowNameText" position="16px -11px" size="340px 26px" name="name" text=""/>
+                        <Text profile="pdsRowValueText" position="360px -11px" size="220px 26px" name="amount" text=""/>
+                    </ListItem>
+                </SmoothList>
+                <ThreePartBitmap profile="fs25_subCategoryListSliderBox">
+                    <Slider profile="fs25_listSlider" dataElementId="productList"/>
+                </ThreePartBitmap>
+            </GuiElement>
+            <Text profile="pdsEmpty" position="50px -340px" size="600px 60px" id="productsEmptyText" text="$l10n_pds_empty_products" visible="false"/>
+
+            <!-- ===== right: sell points ===== -->
+            <Text profile="pdsSectionHeader" position="700px -112px" text="$l10n_pds_header_sellPoints"/>
+            <GuiElement profile="pdsListContainer" position="700px -140px" size="750px 460px">
+                <Bitmap profile="fs25_subCategoryStartClipper" name="startClipper2"/>
+                <Bitmap profile="fs25_subCategoryStopClipper" name="endClipper2"/>
+                <SmoothList profile="pdsList" id="sellPointList" listItemSpacing="6px"
+                            startClipperElementName="startClipper2" endClipperElementName="endClipper2"
+                            handleFocus="true" onListSelectionChanged="onSellPointSelectionChanged">
+                    <ListItem profile="pdsRow">
+                        <Text profile="pdsRowNameText" position="16px -11px" size="440px 26px" name="name" text=""/>
+                        <Text profile="pdsRowValueText" position="470px -11px" size="260px 26px" name="price" text=""/>
+                    </ListItem>
+                </SmoothList>
+                <ThreePartBitmap profile="fs25_subCategoryListSliderBox">
+                    <Slider profile="fs25_listSlider" dataElementId="sellPointList"/>
+                </ThreePartBitmap>
+            </GuiElement>
+            <Text profile="pdsEmpty" position="700px -340px" size="750px 60px" id="sellPointsEmptyText" text="$l10n_pds_empty_sellPoints" visible="false"/>
+
+            <!-- ===== summary panel ===== -->
+            <Bitmap profile="pdsPanel" position="50px -628px" size="1400px 250px"/>
+
+            <Text profile="pdsLabel" position="74px -646px" text="$l10n_pds_label_available"/>
+            <Text profile="pdsValue" position="74px -670px" size="320px 30px" id="availableText" text=""/>
+
+            <Text profile="pdsLabel" position="74px -712px" text="$l10n_pds_label_sellPoint"/>
+            <Text profile="pdsValue" position="74px -736px" size="420px 30px" id="sellPointNameText" text=""/>
+
+            <Text profile="pdsLabel" position="74px -778px" text="$l10n_pds_label_price"/>
+            <Text profile="pdsValue" position="74px -802px" size="320px 30px" id="priceText" text=""/>
+
+            <Text profile="pdsLabel" position="470px -646px" text="$l10n_pds_label_amount"/>
+            <TextInput profile="pdsInputAmount" position="470px -672px" id="amountInput"
+                       onTextChanged="onAmountTextChanged" onEnterPressed="onAmountEnterPressed" enterWhenClickOutside="true"/>
+            <Text profile="pdsLabel" position="800px -646px" text="$l10n_pds_label_gross"/>
+            <Text profile="pdsValue" position="800px -670px" size="300px 30px" id="grossText" text=""/>
+
+            <Text profile="pdsLabel" position="800px -712px" text="$l10n_pds_label_fee"/>
+            <Text profile="pdsValue" position="800px -736px" size="380px 30px" id="feeText" text=""/>
+
+            <Text profile="pdsLabel" position="800px -778px" text="$l10n_pds_label_youReceive"/>
+            <Text profile="pdsValueHero" position="800px -808px" size="500px 50px" id="payoutText" text=""/>
+
+            <Text profile="pdsMessage" position="74px -848px" size="1300px 24px" id="messageText" text=""/>
+        </GuiElement>
+
+        <BoxLayout profile="fs25_dialogButtonBox">
+            <Button profile="buttonBack" text="$l10n_pds_button_cancel" onClick="onClickCancel" id="cancelButton"/>
+            <Bitmap profile="fs25_dialogButtonBoxSeparator"/>
+            <Button profile="buttonActivate" text="$l10n_pds_button_sellCustom" onClick="onClickSellCustom" id="sellCustomButton"/>
+            <Bitmap profile="fs25_dialogButtonBoxSeparator"/>
+            <Button profile="buttonOK" text="$l10n_pds_button_sellAll" onClick="onClickSellAll" id="sellAllButton"/>
+        </BoxLayout>
+    </GuiElement>
+</GUI>
