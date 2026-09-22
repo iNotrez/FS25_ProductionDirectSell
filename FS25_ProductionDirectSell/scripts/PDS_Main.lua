@@ -70,11 +70,20 @@ end
 -- Production menu integration
 -------------------------------------------------------------------------------
 
+---Safely resolves g_currentMission.inGameMenu.pageProduction, or nil if
+-- anything in that chain isn't available right now (e.g. the mission is
+-- mid-teardown when a frame's own onFrameClose still fires).
+function PDS_Main.getPageProduction()
+    if g_currentMission == nil or g_currentMission.inGameMenu == nil then
+        return nil
+    end
+    return g_currentMission.inGameMenu.pageProduction
+end
+
 ---Only true while the player has an owned production selected/open in the
 -- vanilla Production menu - exactly the gate the spec asks for.
 function PDS_Main.getSelectedOwnedProductionPoint()
-    local inGameMenu = g_currentMission ~= nil and g_currentMission.inGameMenu or nil
-    local pageProduction = inGameMenu ~= nil and inGameMenu.pageProduction or nil
+    local pageProduction = PDS_Main.getPageProduction()
     if pageProduction == nil or pageProduction.getSelectedProduction == nil then
         return nil
     end
@@ -95,7 +104,7 @@ end
 -- works regardless of whether a custom action manages to fire on this
 -- particular setup, so the button is the primary, guaranteed way in.
 function PDS_Main.onProductionFrameOpen(pageProduction)
-    if pageProduction ~= g_currentMission.inGameMenu.pageProduction then
+    if pageProduction == nil or pageProduction ~= PDS_Main.getPageProduction() then
         return
     end
     if PDS_Main.sellKeyEventId == nil then
@@ -110,9 +119,10 @@ function PDS_Main.onProductionFrameOpen(pageProduction)
 end
 
 function PDS_Main.onProductionFrameClose(pageProduction)
-    if pageProduction ~= g_currentMission.inGameMenu.pageProduction then
-        return
-    end
+    -- Note: do NOT gate this on PDS_Main.getPageProduction() matching -
+    -- during mission teardown g_currentMission.inGameMenu can already be
+    -- nil by the time this fires, and we still need to release the key and
+    -- hide the button regardless.
     if PDS_Main.sellKeyEventId ~= nil then
         g_inputBinding:removeActionEvent(PDS_Main.sellKeyEventId)
         PDS_Main.sellKeyEventId = nil
@@ -123,7 +133,7 @@ function PDS_Main.onProductionFrameClose(pageProduction)
 end
 
 function PDS_Main.onProductionListSelectionChanged(pageProduction, list, section, index)
-    if pageProduction ~= g_currentMission.inGameMenu.pageProduction then
+    if pageProduction == nil or pageProduction ~= PDS_Main.getPageProduction() then
         return
     end
     PDS_Main.updateSellButtonVisibility()
