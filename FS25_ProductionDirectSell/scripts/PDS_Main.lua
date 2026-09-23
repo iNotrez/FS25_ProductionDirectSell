@@ -75,16 +75,24 @@ function PDS_Main:deleteMap()
     PDS_Main.sellingDialog = nil
     PDS_Main.sellKeyEventId = nil
     PDS_Main.sellButton = nil
+    PDS_Main.currentPageProduction = nil
 end
 
 -------------------------------------------------------------------------------
 -- Production menu integration
 -------------------------------------------------------------------------------
 
----Safely resolves g_currentMission.inGameMenu.pageProduction, or nil if
--- anything in that chain isn't available right now (e.g. the mission is
--- mid-teardown when a frame's own onFrameClose still fires).
+---Resolves the live InGameMenuProductionFrame instance. Prefers the
+-- instance we were actually handed by its own onFrameOpen (cached as
+-- currentPageProduction) since g_currentMission.inGameMenu.pageProduction
+-- does not reliably match it (confirmed from the field log - comparing
+-- against it was silently blocking the key/button from ever being set up).
+-- Falls back to the global lookup for the rare case nothing has opened the
+-- frame yet this session.
 function PDS_Main.getPageProduction()
+    if PDS_Main.currentPageProduction ~= nil then
+        return PDS_Main.currentPageProduction
+    end
     if g_currentMission == nil or g_currentMission.inGameMenu == nil then
         return nil
     end
@@ -125,10 +133,16 @@ end
 -- works regardless of whether a custom action manages to fire on this
 -- particular setup, so the button is the primary, guaranteed way in.
 function PDS_Main.onProductionFrameOpen(pageProduction)
-    PDS_Main.log("onProductionFrameOpen fired, pageProduction=%s matches=%s", tostring(pageProduction), tostring(pageProduction ~= nil and pageProduction == PDS_Main.getPageProduction()))
-    if pageProduction == nil or pageProduction ~= PDS_Main.getPageProduction() then
+    PDS_Main.log("onProductionFrameOpen fired, pageProduction=%s", tostring(pageProduction))
+    -- pageProduction (self) is already guaranteed to be the real
+    -- InGameMenuProductionFrame instance here since we appended directly to
+    -- its own class method - no need to cross-check it against
+    -- g_currentMission.inGameMenu.pageProduction, which turned out not to
+    -- reliably match (that check was silently blocking everything below).
+    if pageProduction == nil then
         return
     end
+    PDS_Main.currentPageProduction = pageProduction
     if PDS_Main.sellKeyEventId == nil then
         local ok, eventId = g_inputBinding:registerActionEvent(InputAction.PDS_OPEN_SELLING, PDS_Main, PDS_Main.onSellKeyPressed, false, true, false, true)
         PDS_Main.log("registerActionEvent result ok=%s eventId=%s", tostring(ok), tostring(eventId))
@@ -156,9 +170,10 @@ function PDS_Main.onProductionFrameClose(pageProduction)
 end
 
 function PDS_Main.onProductionListSelectionChanged(pageProduction, list, section, index)
-    if pageProduction == nil or pageProduction ~= PDS_Main.getPageProduction() then
+    if pageProduction == nil then
         return
     end
+    PDS_Main.currentPageProduction = pageProduction
     PDS_Main.updateSellButtonVisibility()
 end
 
