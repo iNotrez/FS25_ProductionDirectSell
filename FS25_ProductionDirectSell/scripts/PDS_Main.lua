@@ -42,7 +42,15 @@ for _, file in ipairs(scripts) do
     source(PDS_Main.MOD_DIRECTORY .. file)
 end
 
+---Temporary diagnostic logging (prefixed "[PDS]") - grep the FS25 log for
+-- "[PDS]" to see exactly how far the mod got. Safe to remove once the
+-- button/key are confirmed working end to end.
+function PDS_Main.log(fmt, ...)
+    print(string.format("[PDS] " .. fmt, ...))
+end
+
 function PDS_Main:loadMap(filename)
+    PDS_Main.log("loadMap start")
     if g_gui == nil then
         Logging.error("[ProductionDirectSell] g_gui not available, mod disabled")
         return
@@ -51,12 +59,15 @@ function PDS_Main:loadMap(filename)
     g_gui:loadProfiles(PDS_Main.MOD_DIRECTORY .. "gui/guiProfiles.xml")
 
     PDS_Main.confirmDialog = PDS_ConfirmDialog.new()
-    g_gui:loadGui(PDS_Main.MOD_DIRECTORY .. "gui/PDS_ConfirmDialog.xml", "PDS_ConfirmDialog", PDS_Main.confirmDialog)
+    local confirmGui = g_gui:loadGui(PDS_Main.MOD_DIRECTORY .. "gui/PDS_ConfirmDialog.xml", "PDS_ConfirmDialog", PDS_Main.confirmDialog)
+    PDS_Main.log("PDS_ConfirmDialog gui loaded: %s", tostring(confirmGui ~= nil))
 
     PDS_Main.sellingDialog = PDS_SellingDialog.new()
-    g_gui:loadGui(PDS_Main.MOD_DIRECTORY .. "gui/PDS_SellingDialog.xml", "PDS_SellingDialog", PDS_Main.sellingDialog)
+    local sellingGui = g_gui:loadGui(PDS_Main.MOD_DIRECTORY .. "gui/PDS_SellingDialog.xml", "PDS_SellingDialog", PDS_Main.sellingDialog)
+    PDS_Main.log("PDS_SellingDialog gui loaded: %s", tostring(sellingGui ~= nil))
 
     PDS_Main.installProductionMenuHook()
+    PDS_Main.log("loadMap done, InputAction.PDS_OPEN_SELLING = %s", tostring(InputAction ~= nil and InputAction.PDS_OPEN_SELLING or "InputAction table missing"))
 end
 
 function PDS_Main:deleteMap()
@@ -85,14 +96,24 @@ end
 function PDS_Main.getSelectedOwnedProductionPoint()
     local pageProduction = PDS_Main.getPageProduction()
     if pageProduction == nil or pageProduction.getSelectedProduction == nil then
+        PDS_Main.log("getSelectedOwnedProductionPoint: no pageProduction (pageProduction=%s)", tostring(pageProduction))
         return nil
     end
     if pageProduction.pointsSelector == nil or pageProduction.pointsSelector:getState() ~= InGameMenuProductionFrame.POINTS_OWNED then
+        PDS_Main.log("getSelectedOwnedProductionPoint: pointsSelector state is not POINTS_OWNED (state=%s)",
+            tostring(pageProduction.pointsSelector ~= nil and pageProduction.pointsSelector:getState() or nil))
         return nil
     end
     local _, productionPoint = pageProduction:getSelectedProduction()
+    if productionPoint == nil then
+        PDS_Main.log("getSelectedOwnedProductionPoint: getSelectedProduction() returned no productionPoint")
+        return nil
+    end
     local farmId = g_currentMission:getFarmId()
     if not PDS_Manager.isSellableProductionPoint(productionPoint, farmId) then
+        PDS_Main.log("getSelectedOwnedProductionPoint: '%s' failed isSellableProductionPoint (myFarmId=%s, ownerFarmId=%s)",
+            tostring(productionPoint:getName()), tostring(farmId),
+            tostring(productionPoint.getOwnerFarmId ~= nil and productionPoint:getOwnerFarmId() or productionPoint.ownerFarmId))
         return nil
     end
     return productionPoint
@@ -104,11 +125,13 @@ end
 -- works regardless of whether a custom action manages to fire on this
 -- particular setup, so the button is the primary, guaranteed way in.
 function PDS_Main.onProductionFrameOpen(pageProduction)
+    PDS_Main.log("onProductionFrameOpen fired, pageProduction=%s matches=%s", tostring(pageProduction), tostring(pageProduction ~= nil and pageProduction == PDS_Main.getPageProduction()))
     if pageProduction == nil or pageProduction ~= PDS_Main.getPageProduction() then
         return
     end
     if PDS_Main.sellKeyEventId == nil then
-        local _, eventId = g_inputBinding:registerActionEvent(InputAction.PDS_OPEN_SELLING, PDS_Main, PDS_Main.onSellKeyPressed, false, true, false, true)
+        local ok, eventId = g_inputBinding:registerActionEvent(InputAction.PDS_OPEN_SELLING, PDS_Main, PDS_Main.onSellKeyPressed, false, true, false, true)
+        PDS_Main.log("registerActionEvent result ok=%s eventId=%s", tostring(ok), tostring(eventId))
         if eventId ~= nil then
             g_inputBinding:setActionEventTextVisibility(eventId, false)
             PDS_Main.sellKeyEventId = eventId
@@ -140,6 +163,7 @@ function PDS_Main.onProductionListSelectionChanged(pageProduction, list, section
 end
 
 function PDS_Main:onSellKeyPressed(actionName, inputValue, callbackState, isAnalog)
+    PDS_Main.log("onSellKeyPressed fired")
     PDS_Main.openSellingForSelected()
 end
 
@@ -151,13 +175,26 @@ end
 -- how the surrounding menu happens to be wiring its own buttons that frame.
 function PDS_Main.createSellButton()
     if PDS_Main.sellButton ~= nil then
+        PDS_Main.log("createSellButton: already created, skipping")
         return
     end
     if g_inGameMenu == nil or g_inGameMenu.menuButton == nil or g_inGameMenu.menuButton[1] == nil then
+        PDS_Main.log("createSellButton: ABORT - g_inGameMenu=%s menuButton=%s menuButton[1]=%s",
+            tostring(g_inGameMenu), tostring(g_inGameMenu ~= nil and g_inGameMenu.menuButton or nil),
+            tostring(g_inGameMenu ~= nil and g_inGameMenu.menuButton ~= nil and g_inGameMenu.menuButton[1] or nil))
         return
     end
     local template = g_inGameMenu.menuButton[1]
-    local button = template:clone(template.parent)
+    PDS_Main.log("createSellButton: cloning template=%s parent=%s", tostring(template), tostring(template.parent))
+    local ok, button = pcall(function() return template:clone(template.parent) end)
+    if not ok then
+        PDS_Main.log("createSellButton: clone() THREW: %s", tostring(button))
+        return
+    end
+    PDS_Main.log("createSellButton: clone() returned %s", tostring(button))
+    if button == nil then
+        return
+    end
     button:setText(g_i18n:getText("pds_action_openSelling"))
     button:setInputAction("PDS_OPEN_SELLING")
     button.onClickCallback = PDS_Main.onSellButtonClicked
@@ -167,9 +204,11 @@ function PDS_Main.createSellButton()
         template.parent:invalidateLayout(true)
     end
     PDS_Main.sellButton = button
+    PDS_Main.log("createSellButton: done, sellButton=%s", tostring(PDS_Main.sellButton))
 end
 
 function PDS_Main.onSellButtonClicked()
+    PDS_Main.log("onSellButtonClicked fired")
     PDS_Main.openSellingForSelected()
 end
 
@@ -177,10 +216,14 @@ end
 -- actually in storage, is selected - exactly the gate the spec asks for.
 function PDS_Main.updateSellButtonVisibility()
     if PDS_Main.sellButton == nil then
+        PDS_Main.log("updateSellButtonVisibility: sellButton is nil, nothing to update")
         return
     end
     local productionPoint = PDS_Main.getSelectedOwnedProductionPoint()
-    local visible = productionPoint ~= nil and #PDS_Manager.getSellableProducts(productionPoint) > 0
+    local productCount = productionPoint ~= nil and #PDS_Manager.getSellableProducts(productionPoint) or 0
+    local visible = productionPoint ~= nil and productCount > 0
+    PDS_Main.log("updateSellButtonVisibility: productionPoint=%s productCount=%d visible=%s",
+        tostring(productionPoint ~= nil and productionPoint:getName() or nil), productCount, tostring(visible))
     PDS_Main.sellButton:setVisible(visible)
     if PDS_Main.sellButton.parent ~= nil and PDS_Main.sellButton.parent.invalidateLayout ~= nil then
         PDS_Main.sellButton.parent:invalidateLayout(true)
@@ -195,11 +238,13 @@ function PDS_Main.installProductionMenuHook()
     InGameMenuProductionFrame.onFrameOpen = Utils.appendedFunction(InGameMenuProductionFrame.onFrameOpen, PDS_Main.onProductionFrameOpen)
     InGameMenuProductionFrame.onFrameClose = Utils.appendedFunction(InGameMenuProductionFrame.onFrameClose, PDS_Main.onProductionFrameClose)
     InGameMenuProductionFrame.onListSelectionChanged = Utils.appendedFunction(InGameMenuProductionFrame.onListSelectionChanged, PDS_Main.onProductionListSelectionChanged)
+    PDS_Main.log("installProductionMenuHook: hooks installed on InGameMenuProductionFrame")
 end
 
 ---Opens the selling dialog for whatever production is currently selected in
 -- the vanilla Production menu. Safe to call from the menu button or the key.
 function PDS_Main.openSellingForSelected()
+    PDS_Main.log("openSellingForSelected called")
     local productionPoint = PDS_Main.getSelectedOwnedProductionPoint()
     if productionPoint == nil then
         g_currentMission:showBlinkingWarning(g_i18n:getText("pds_warning_noProductionSelected"), 2000)
